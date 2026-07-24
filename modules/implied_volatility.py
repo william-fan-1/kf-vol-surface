@@ -12,7 +12,14 @@ def bisection(
     max_iter: int=100,
 ):
     # Declare intial high,low guesses
-    low, high = 1e-6, 15
+    low, high = 1e-6, 5
+
+    # Check to ensure price is feasible to solve
+    price_low = black_scholes(S, T, r, K, low, option_type)
+    price_high = black_scholes(S, T, r, K, high, option_type)
+
+    if not (price_low <= market_price <= price_high):
+        raise ValueError('Market price outside feasible range.')
 
     for _ in range(max_iter):
         sigma = (low + high)/2
