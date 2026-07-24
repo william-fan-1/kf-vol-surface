@@ -2,7 +2,6 @@
 from modules.black_scholes import black_scholes
 
 def bisection(
-    market_price: float,
     S: float, 
     T: float, 
     r: float, 
@@ -18,7 +17,7 @@ def bisection(
     price_low = black_scholes(S, T, r, K, low, option_type)
     price_high = black_scholes(S, T, r, K, high, option_type)
 
-    if not (price_low <= market_price <= price_high):
+    if not (price_low <= S <= price_high):
         raise ValueError('Market price outside feasible range.')
 
     for _ in range(max_iter):
@@ -32,10 +31,10 @@ def bisection(
             option_type=option_type
         )
 
-        if abs(price - market_price) < tol:
+        if abs(price - S) < tol:
             return sigma
 
-        if price > market_price:
+        if price > S:
             high = sigma
 
         else:
