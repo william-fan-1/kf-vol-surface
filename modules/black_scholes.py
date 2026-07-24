@@ -1,5 +1,5 @@
 '''Given inputs, calculate the price of an option using Black-Scholes'''
-import numpy as 
+import numpy as np
 from scipy.stats import norm
 
 def black_scholes(
