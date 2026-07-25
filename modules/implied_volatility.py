@@ -1,28 +1,24 @@
 '''Given inputs, calculate implied volatility of an option'''
 from modules.black_scholes import black_scholes
+import numpy as np
 
 def bisection(
+    market_price: float,
     S: float, 
     T: float, 
     r: float, 
     K: float, 
     option_type='call',
     tol: float=1e-6,
-    max_iter: int=100,
+    max_iter: int=30,
 ):
     # Declare intial high,low guesses
-    low, high = 1e-6, 5
-
-    # Check to ensure price is feasible to solve
-    price_low = black_scholes(S, T, r, K, low, option_type)
-    price_high = black_scholes(S, T, r, K, high, option_type)
-
-    if not (price_low <= S <= price_high):
-        raise ValueError('Market price outside feasible range.')
+    low = np.full(len(S), 1e-6, dtype=float)
+    high = np.full(len(S), 5.0, dtype=float)
 
     for _ in range(max_iter):
         sigma = (low + high)/2
-        price = black_scholes(
+        prices = black_scholes(
             S=S,
             T=T,
             r=r,
@@ -31,13 +27,11 @@ def bisection(
             option_type=option_type
         )
 
-        if abs(price - S) < tol:
-            return sigma
+        error = np.abs(prices - market_price)
 
-        if price > S:
-            high = sigma
+        mask = prices > market_price
 
-        else:
-            low = sigma
+        high[mask] = sigma[mask]
+        low[~mask] = sigma[~mask]
 
-    raise RuntimeError('Bisection method failed to converge.')
+    return sigma

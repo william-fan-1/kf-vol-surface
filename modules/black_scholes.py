@@ -22,12 +22,18 @@ def black_scholes(
         T=T,
         sigma=sigma
     )
-    if option_type == 'call':
-        return (S*norm.cdf(d1) 
-        - np.exp(-r*T)*K*norm.cdf(d2))
-    elif option_type == 'put':
-        return (np.exp(-r*T)*K*norm.cdf(-d2)
-        - S*norm.cdf(-d1))
+    
+    call_price = (
+        S * norm.cdf(d1)
+        - K * np.exp(-r*T) * norm.cdf(d2)
+    )
+
+    put_price = (
+        K * np.exp(-r*T) * norm.cdf(-d2)
+        - S * norm.cdf(-d1)
+    )
+
+    return np.where(option_type == 'call', call_price, put_price)
 
 def _d1(
     S: float, 
