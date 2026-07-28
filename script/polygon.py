@@ -31,11 +31,13 @@ UNDERLYING = 'SPY'
 # ~Half a year back from today. The script produced more days that this
 # because it had to be ran over multiple days since it took so long
 # thus pushing the end date farther back by 3 days.
-END_DATE = datetime.today().date()
-START_DATE = END_DATE - timedelta(days=180)
-
-START_DATE = START_DATE.strftime('%Y-%m-%d')
-END_DATE = END_DATE.strftime('%Y-%m-%d')
+# END_DATE = datetime.today().date()
+# START_DATE = END_DATE - timedelta(days=180)
+# START_DATE = START_DATE.strftime('%Y-%m-%d')
+# END_DATE = END_DATE.strftime('%Y-%m-%d')
+# Hard code start and end dates when re-running script
+END_DATE = '2026-07-15'
+START_DATE = '2026-01-15'
 
 # Surface grid for efficiency of API calls
 TARGET_MONEYNESS = [
@@ -52,19 +54,24 @@ TARGET_DTE = [
     30,
     60,
     90,
-    180
+    120,
+    180,
+    270,
+    365
 ]
 
-MAX_DTE_ERROR = 10
+MAX_DTE_ERROR = 20
 MIN_VOLUME = 25
 
 # Saving
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'data')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-CHECKPOINT_FILE = os.path.join(OUTPUT_DIR, 'spy_surface_checkpoint.csv')
-COMPLETED_DATES_FILE = os.path.join(OUTPUT_DIR, 'completed_dates.txt')
-FINAL_FILE = os.path.join(OUTPUT_DIR, 'spy_surface_raw.csv')
+# v2 run
+CHECKPOINT_FILE = os.path.join(OUTPUT_DIR, 'spy_surface_checkpoint_v2.csv')
+COMPLETED_DATES_FILE = os.path.join(OUTPUT_DIR, 'completed_dates_v2.txt')
+FINAL_FILE = os.path.join(OUTPUT_DIR, 'spy_surface_raw_v2.csv')
+
 CHAIN_CACHE = os.path.join(OUTPUT_DIR, 'chain_cache')
 os.makedirs(CHAIN_CACHE, exist_ok=True)
 SPY_PRICE_FILE = os.path.join(
@@ -141,7 +148,7 @@ def get_option_chain(date: str) -> Dict[str, Any]:
         'expiration_date.lte': (
             pd.Timestamp(date)
             +
-            pd.Timedelta(days=200)
+            pd.Timedelta(days=400)
         ).strftime('%Y-%m-%d'),
         'limit': 1000,
         'apiKey': API_KEY
