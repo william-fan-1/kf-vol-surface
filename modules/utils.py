@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def select_otm(df: pd.DataFrame) -> pd.DataFrame:
     return df[
@@ -14,11 +15,12 @@ def select_otm(df: pd.DataFrame) -> pd.DataFrame:
     ]
 
 def create_surface(df: pd.DataFrame, date: str) -> pd.DataFrame:
+    df['log_moneyness'] = np.log(df['target_moneyness'])
     surface = (
         df[df['date'] == date]
         .pivot_table(
             index='target_dte',
-            columns='target_moneyness',
+            columns='log_moneyness',
             values='IV',
             aggfunc='mean'
         )
